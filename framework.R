@@ -1,4 +1,3 @@
-
 # WORKFLOW FOR FUNCTIONAL DATA DESEQ2 ANALYSIS
 # Author: C. Green
 # Last edited: 7/15/2020
@@ -30,17 +29,15 @@ count_information <- read.csv("~/Documents/CRREL/permafrost-pathogens/count_info
 metadata <- count_information[,c("location","thaw.temp","combined_factor")]
 metadata$location <- factor(metadata$location)
 metadata$thaw.temp <- factor(metadata$thaw.temp)
-metadata$combined_factor <- factor(metadata$combined_factor) 
+metadata$combined_factor <- factor(metadata$combined_factor)
 
 
 # verify correct labeling
 all(rownames(metadata) %in% colnames(counts)) # TRUE
-all(rownames(metadata) == colnames(counts)) #TRUE
+all(rownames(metadata) == colnames(counts)) # TRUE
 
 # open DESeq2
 library("DESeq2")
-
-install.packages("DelayedArray")
 
 # make DESeq Data Set from count matrix
 dds <- DESeqDataSetFromMatrix(countData = counts,
@@ -59,26 +56,9 @@ dds$thaw.temp <- factor(dds$thaw.temp, levels = c("frozen", "thawing", "thawed")
 
 # ~~~ pre-filtering taken care of in BBTools ~~~
 
-# ~~collapse technical replicates~~
-  # technical replicates are grouped into a single row
-  # does having 3 v 4 replicates for some groups affect abundance?
-?collapseReplicates
-ddsColl <- collapseReplicates(dds, dds$combined_factor, renameCols=TRUE)
-
-colData(ddsColl)
-colnames(ddsColl)
-
-# check that the sum of the counts for "replicate1" is the same
-# as the counts in the "replicate1" column in ddsColl
-matchFirstLevel <- dds$combined_factor == levels(dds$combined_factor)[1]
-stopifnot(all(rowSums(counts(dds[,matchFirstLevel])) == counts(ddsColl[,1])))
-
-
-
 # ~~~differential expression analysis~~~
   # what are the default tests being run?
   # what are the comparisons we are looking for?
-?DESeq
 dds <- DESeq(dds)  
 res <- results(dds)
 res
@@ -103,8 +83,6 @@ res83thawing_frozen <- results(dds, contrast=c("combined_factor", "thawing83_met
 
 resNewThawed_frozen <- results(dds, contrast=c("combined_factor", "thawednew_tunnel", "frozennew_tunnel"))
 resNewThawing_frozen <- results(dds, contrast=c("combined_factor", "thawingnew_tunnel", "frozennew_tunnel"))
-
-?lfcShrink
 
 # output site results to csv files
 write.csv(as.data.frame(res35thawed_frozen), 
@@ -131,6 +109,5 @@ write.csv(as.data.frame(resNewThawed_frozen),
           file="resNewThawed_frozen.csv")
 write.csv(as.data.frame(resNewThawing_frozen), 
           file="resNewThawing_frozen.csv")
-
 
 
