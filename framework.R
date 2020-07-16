@@ -45,7 +45,7 @@ install.packages("DelayedArray")
 # make DESeq Data Set from count matrix
 dds <- DESeqDataSetFromMatrix(countData = counts,
                               colData = metadata,
-                              design = ~ location)
+                              design = ~ combined_factor)
 dds
 
 # ~~ re-level data ~~~
@@ -78,6 +78,7 @@ stopifnot(all(rowSums(counts(dds[,matchFirstLevel])) == counts(ddsColl[,1])))
 # ~~~differential expression analysis~~~
   # what are the default tests being run?
   # what are the comparisons we are looking for?
+?DESeq
 dds <- DESeq(dds)  
 res <- results(dds)
 res
@@ -86,25 +87,50 @@ res
 resultsNames(dds)
 
 # ~~~ contrast results ~~~
-res35_thawed_frozen <- results(dds, contrast=c("combined_factor", "thawed35_meters", "frozen35_meters"))
-res35_thawing_frozen <- results(dds, contrast=c("combined_factor", "thawing35_meters", "frozen35_meters"))
+# do we use?? independentFiltering=TRUE, alpha=0.05, pAdjustMethod="BH", parallel=TRUE
+# do we want to LFCShrink???
+res35thawed_frozen <- results(dds, contrast=c("combined_factor", "thawed35_meters", "frozen35_meters"))
+res35thawing_frozen <- results(dds, contrast=c("combined_factor", "thawing35_meters", "frozen35_meters"))
 
-# output these even though it is just the first two
-write.csv(as.data.frame(res35_thawed_frozen), 
-          file="res35_thawed_frozen.csv")
-write.csv(as.data.frame(res35_thawing_frozen), 
-          file="res35_thawing_frozen.csv")
+res45thawed_frozen <- results(dds, contrast=c("combined_factor", "thawed45_meters", "frozen45_meters"))
+res45thawing_frozen <- results(dds, contrast=c("combined_factor", "thawing45_meters", "frozen45_meters"))
 
-# ~~interactions~~
-    # if the log2 fold change attributable to a given 
-    # condition is different based on another factor, for 
-    # example if the condition effect differs across genotype
-?results
-dds$group <- factor(paste0(dds$thaw.temp:dds$location)) # two conditions you want to compare
-design(dds) <- ~ group
-dds <- DESeq(dds)
-resultsNames(dds) # display intersect names
+res60thawed_frozen <- results(dds, contrast=c("combined_factor", "thawed60_meters", "frozen60_meters"))
+res60thawing_frozen <- results(dds, contrast=c("combined_factor", "thawing60_meters", "frozen60_meters"))
 
-results(dds, contrast=c("group", "35_meter", "frozen"))
+res83thawed_frozen <- results(dds, contrast=c("combined_factor", "thawed83_meters", "frozen83_meters"))
+res83thawing_frozen <- results(dds, contrast=c("combined_factor", "thawing83_meters", "frozen83_meters"))
+
+resNewThawed_frozen <- results(dds, contrast=c("combined_factor", "thawednew_tunnel", "frozennew_tunnel"))
+resNewThawing_frozen <- results(dds, contrast=c("combined_factor", "thawingnew_tunnel", "frozennew_tunnel"))
+
+?lfcShrink
+
+# output site results to csv files
+write.csv(as.data.frame(res35thawed_frozen), 
+          file="res35thawed_frozen.csv")
+write.csv(as.data.frame(res35thawing_frozen), 
+          file="res35thawing_frozen.csv")
+
+write.csv(as.data.frame(res45thawed_frozen), 
+          file="res45thawed_frozen.csv")
+write.csv(as.data.frame(res45thawing_frozen), 
+          file="res45thawing_frozen.csv")
+
+write.csv(as.data.frame(res60thawed_frozen), 
+          file="res60thawed_frozen.csv")
+write.csv(as.data.frame(res60thawing_frozen), 
+          file="res60thawing_frozen.csv")
+
+write.csv(as.data.frame(res83thawed_frozen), 
+          file="res835thawed_frozen.csv")
+write.csv(as.data.frame(res83thawing_frozen), 
+          file="res83thawing_frozen.csv")
+
+write.csv(as.data.frame(resNewThawed_frozen), 
+          file="resNewThawed_frozen.csv")
+write.csv(as.data.frame(resNewThawing_frozen), 
+          file="resNewThawing_frozen.csv")
+
 
 
