@@ -1,31 +1,37 @@
-# Data processing framework
-# a working outline of steps that need to be completed to
-# statistically analyze the permafrost data
 
-# WORKFLOW FOR FUNCTIONAL DATA (ie virulence factors)
-# decide on relevant VFs and sort data
+# WORKFLOW FOR FUNCTIONAL DATA DESEQ2 ANALYSIS
+# Author: C. Green
+# Last edited: 7/15/2020
 
-# download DESeq2
+# Citation: M. I. Love, W. Huber, S. Anders: Moderated 
+# estimation of fold change and dispersion for RNA-Seq data 
+# with DESeq2. bioRxiv (2014). doi:10.1101/002832
+
+# download DESeq2 and BiocManager
 if (!requireNamespace("BiocManager", quietly = TRUE))
   install.packages("BiocManager")
 BiocManager::install(version = "3.11")
 
 BiocManager::install("DESeq2")
 
-#read in matrix count data as a tsv
+# ~~~ data set creation ~~~
+# using count matrix input data workflow
+
+# read in count matrix
+  # only including "Virulence" and "Virulence, Disease and Defense" SEED subsystems
+  # from L03 sequence data
 counts <- as.matrix(read.csv("~/Documents/CRREL/permafrost-pathogens/L03_Virulence.tsv", 
                                       sep = "\t", row.names=1))
 
-# read in matrix count data
-sample_information <- read.csv("~/Documents/CRREL/permafrost-pathogens/sample_information.csv", row.names=1)
+# read in count matrix metadata
+count_information <- read.csv("~/Documents/CRREL/permafrost-pathogens/count_information.csv", row.names=1)
 
-# format collection data
-metadata <- sample_information[,c("location","thaw.temp","replicate")]
+# format count matrix metadata
+metadata <- count_information[,c("location","thaw.temp","combined_factor")]
 metadata$location <- factor(metadata$location)
 metadata$thaw.temp <- factor(metadata$thaw.temp)
-metadata$replicate <- factor(metadata$replicate)
+metadata$combined_factor <- factor(metadata$combined_factor) 
 
-head(counts,2)
 
 # verify correct labeling
 all(rownames(metadata) %in% colnames(counts)) # TRUE
@@ -34,34 +40,71 @@ all(rownames(metadata) == colnames(counts)) #TRUE
 # open DESeq2
 library("DESeq2")
 
+install.packages("DelayedArray")
+
 # make DESeq Data Set from count matrix
 dds <- DESeqDataSetFromMatrix(countData = counts,
                               colData = metadata,
                               design = ~ location)
 dds
 
-# re-leveling location data based on control group, 
-  # then age of sample (depth)
-dds$location <- factor(dds$location, levels = c("control",
-                      "new tunnel", "35 meters", "45 meters", 
-                      "60 meters", "83 meters"))
+# ~~ re-level data ~~~
+# re-level location data based on control group, 
+  # then depth of sample
+dds$location <- factor(dds$location, levels = c("new_tunnel", 
+                    "35_meters", "45_meters", "60_meters", "83_meters"))
 
 # re-leveling thaw state over temp gradient (frozen to thawed)
 dds$thaw.temp <- factor(dds$thaw.temp, levels = c("frozen", "thawing", "thawed"))
 
-# can use dds$condition <- droplevels(dds$condition) to drop 
-  # unneeded samples/metadata
+# ~~~ pre-filtering taken care of in BBTools ~~~
 
-# should we pre-filter?
+# ~~collapse technical replicates~~
+  # technical replicates are grouped into a single row
+  # does having 3 v 4 replicates for some groups affect abundance?
+?collapseReplicates
+ddsColl <- collapseReplicates(dds, dds$combined_factor, renameCols=TRUE)
 
-# differential expression analysis
+colData(ddsColl)
+colnames(ddsColl)
 
-# save results to file
+# check that the sum of the counts for "replicate1" is the same
+# as the counts in the "replicate1" column in ddsColl
+matchFirstLevel <- dds$combined_factor == levels(dds$combined_factor)[1]
+stopifnot(all(rowSums(counts(dds[,matchFirstLevel])) == counts(ddsColl[,1])))
 
-# output graphs
 
 
+# ~~~differential expression analysis~~~
+  # what are the default tests being run?
+  # what are the comparisons we are looking for?
+dds <- DESeq(dds)  
+res <- results(dds)
+res
 
+# prints the list of comparisons
+resultsNames(dds)
 
+# ~~~ contrast results ~~~
+res35_thawed_frozen <- results(dds, contrast=c("combined_factor", "thawed35_meters", "frozen35_meters"))
+res35_thawing_frozen <- results(dds, contrast=c("combined_factor", "thawing35_meters", "frozen35_meters"))
+
+# output these even though it is just the first two
+write.csv(as.data.frame(res35_thawed_frozen), 
+          file="res35_thawed_frozen.csv")
+write.csv(as.data.frame(res35_thawing_frozen), 
+          file="res35_thawing_frozen.csv")
+
+# ~~interactions~~
+    # if the log2 fold change attributable to a given 
+    # condition is different based on another factor, for 
+    # example if the condition effect differs across genotype
+?results
+dds$group <- factor(paste0(dds$thaw.temp:dds$location)) # two conditions you want to compare
+design(dds) <- ~ group
+dds <- DESeq(dds)
+resultsNames(dds) # display intersect names
+
+results(dds, contrast=c("group", "35_meter", "frozen"))
 
 
