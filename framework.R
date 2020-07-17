@@ -67,8 +67,7 @@ res
 resultsNames(dds)
 
 # ~~~ contrast results ~~~
-# do we use?? independentFiltering=TRUE, alpha=0.05, pAdjustMethod="BH", parallel=TRUE
-# do we want to LFCShrink???
+
 res35thawed_frozen <- results(dds, contrast=c("combined_factor", "thawed35_meters", "frozen35_meters"))
 res35thawing_frozen <- results(dds, contrast=c("combined_factor", "thawing35_meters", "frozen35_meters"))
 
@@ -83,6 +82,45 @@ res83thawing_frozen <- results(dds, contrast=c("combined_factor", "thawing83_met
 
 resNewThawed_frozen <- results(dds, contrast=c("combined_factor", "thawednew_tunnel", "frozennew_tunnel"))
 resNewThawing_frozen <- results(dds, contrast=c("combined_factor", "thawingnew_tunnel", "frozennew_tunnel"))
+
+# ~~~ output to .csv files ~~~
+# L03 subsystem name plus LFC and adjusted p-value for 
+# frozen/thawing and frozen/thawed at each site
+
+res35 <- c(as.data.frame(res35thawed_frozen@rownames), 
+           as.data.frame(res35thawed_frozen$log2FoldChange), 
+           as.data.frame(res35thawed_frozen$padj),
+           as.data.frame(res35thawing_frozen$log2FoldChange),
+           as.data.frame(res35thawing_frozen$padj))
+write.csv(res35, file="res35.csv")
+
+res45 <- c(as.data.frame(res45thawed_frozen@rownames), 
+           as.data.frame(res45thawed_frozen$log2FoldChange), 
+           as.data.frame(res45thawed_frozen$padj),
+           as.data.frame(res45thawing_frozen$log2FoldChange),
+           as.data.frame(res45thawing_frozen$padj))
+write.csv(res45, file="res45.csv")
+
+res60 <- c(as.data.frame(res60thawed_frozen@rownames), 
+           as.data.frame(res60thawed_frozen$log2FoldChange), 
+           as.data.frame(res60thawed_frozen$padj),
+           as.data.frame(res60thawing_frozen$log2FoldChange),
+           as.data.frame(res60thawing_frozen$padj))
+write.csv(res60, file="res60.csv")
+
+res83 <- c(as.data.frame(res83thawed_frozen@rownames), 
+           as.data.frame(res83thawed_frozen$log2FoldChange), 
+           as.data.frame(res83thawed_frozen$padj),
+           as.data.frame(res83thawing_frozen$log2FoldChange),
+           as.data.frame(res83thawing_frozen$padj))
+write.csv(res83, file="res83.csv")
+
+resNew <- c(as.data.frame(resNewThawed_frozen@rownames), 
+           as.data.frame(resNewThawed_frozen$log2FoldChange), 
+           as.data.frame(resNewThawed_frozen$padj),
+           as.data.frame(resNewThawing_frozen$log2FoldChange),
+           as.data.frame(resNewThawing_frozen$padj))
+write.csv(resNew, file="resNew.csv")
 
 # output site results to csv files
 write.csv(as.data.frame(res35thawed_frozen), 
@@ -109,5 +147,14 @@ write.csv(as.data.frame(resNewThawed_frozen),
           file="resNewThawed_frozen.csv")
 write.csv(as.data.frame(resNewThawing_frozen), 
           file="resNewThawing_frozen.csv")
+
+
+
+
+
+
+
+
+
 
 
