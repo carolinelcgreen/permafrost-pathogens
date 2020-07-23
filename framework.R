@@ -1,6 +1,7 @@
 # WORKFLOW FOR FUNCTIONAL DATA DESEQ2 ANALYSIS
+# Created: 7/01/2020
 # Author: C. Green
-# Last edited: 7/15/2020
+# Last edited: 7/17/2020
 
 # Citation: M. I. Love, W. Huber, S. Anders: Moderated 
 # estimation of fold change and dispersion for RNA-Seq data 
@@ -12,8 +13,9 @@ if (!requireNamespace("BiocManager", quietly = TRUE))
 BiocManager::install(version = "3.11")
 
 BiocManager::install("DESeq2")
+BiocManager::install("pheatmap")
 
-# ~~~ data set creation ~~~
+a# ~~~ data set creation ~~~
 # using count matrix input data workflow
 
 # read in count matrix
@@ -83,46 +85,53 @@ res83thawing_frozen <- results(dds, contrast=c("combined_factor", "thawing83_met
 resNewThawed_frozen <- results(dds, contrast=c("combined_factor", "thawednew_tunnel", "frozennew_tunnel"))
 resNewThawing_frozen <- results(dds, contrast=c("combined_factor", "thawingnew_tunnel", "frozennew_tunnel"))
 
+
+plot(metadata(res)$filterNumRej, 
+     type="b", ylab="number of rejections",
+     xlab="quantiles of filter")
 # ~~~ output to .csv files ~~~
 # L03 subsystem name plus LFC and adjusted p-value for 
 # frozen/thawing and frozen/thawed at each site
 
 res35 <- c(as.data.frame(res35thawed_frozen@rownames), 
-           as.data.frame(res35thawed_frozen$log2FoldChange), 
-           as.data.frame(res35thawed_frozen$padj),
            as.data.frame(res35thawing_frozen$log2FoldChange),
-           as.data.frame(res35thawing_frozen$padj))
+           as.data.frame(res35thawing_frozen$padj),
+           as.data.frame(res35thawed_frozen$log2FoldChange), 
+           as.data.frame(res35thawed_frozen$padj))
 write.csv(res35, file="res35.csv")
+head(res35)
 
 res45 <- c(as.data.frame(res45thawed_frozen@rownames), 
            as.data.frame(res45thawed_frozen$log2FoldChange), 
-           as.data.frame(res45thawed_frozen$padj),
            as.data.frame(res45thawing_frozen$log2FoldChange),
-           as.data.frame(res45thawing_frozen$padj))
+           as.data.frame(res45thawing_frozen$padj),
+           as.data.frame(res45thawed_frozen$padj))
 write.csv(res45, file="res45.csv")
 
 res60 <- c(as.data.frame(res60thawed_frozen@rownames), 
-           as.data.frame(res60thawed_frozen$log2FoldChange), 
-           as.data.frame(res60thawed_frozen$padj),
            as.data.frame(res60thawing_frozen$log2FoldChange),
-           as.data.frame(res60thawing_frozen$padj))
+           as.data.frame(res60thawing_frozen$padj),
+           as.data.frame(res60thawed_frozen$log2FoldChange), 
+           as.data.frame(res60thawed_frozen$padj))
 write.csv(res60, file="res60.csv")
+?write.csv
 
-res83 <- c(as.data.frame(res83thawed_frozen@rownames), 
-           as.data.frame(res83thawed_frozen$log2FoldChange), 
-           as.data.frame(res83thawed_frozen$padj),
+res83 <- c(as.data.frame(res83thawed_frozen@rownames),
            as.data.frame(res83thawing_frozen$log2FoldChange),
-           as.data.frame(res83thawing_frozen$padj))
+           as.data.frame(res83thawing_frozen$padj),
+           as.data.frame(res83thawed_frozen$log2FoldChange), 
+           as.data.frame(res83thawed_frozen$padj))
 write.csv(res83, file="res83.csv")
 
-resNew <- c(as.data.frame(resNewThawed_frozen@rownames), 
-           as.data.frame(resNewThawed_frozen$log2FoldChange), 
-           as.data.frame(resNewThawed_frozen$padj),
-           as.data.frame(resNewThawing_frozen$log2FoldChange),
-           as.data.frame(resNewThawing_frozen$padj))
+resNew <- c(as.data.frame(resNewThawed_frozen@rownames),
+            as.data.frame(resNewThawing_frozen$log2FoldChange),
+            as.data.frame(resNewThawing_frozen$padj),
+            as.data.frame(resNewThawed_frozen$log2FoldChange), 
+            as.data.frame(resNewThawed_frozen$padj))
 write.csv(resNew, file="resNew.csv")
 
-# output site results to csv files
+# output ALL site results to csv files
+  # (includes all info, not just log2 and padj)
 write.csv(as.data.frame(res35thawed_frozen), 
           file="res35thawed_frozen.csv")
 write.csv(as.data.frame(res35thawing_frozen), 
