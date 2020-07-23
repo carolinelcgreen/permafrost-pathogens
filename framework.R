@@ -21,6 +21,7 @@ a# ~~~ data set creation ~~~
 # read in count matrix
   # only including "Virulence" and "Virulence, Disease and Defense" SEED subsystems
   # from L03 sequence data
+  # control columns were removed prior
 counts <- as.matrix(read.csv("~/Documents/CRREL/permafrost-pathogens/L03_Virulence.tsv", 
                                       sep = "\t", row.names=1))
 
@@ -63,10 +64,48 @@ dds$thaw.temp <- factor(dds$thaw.temp, levels = c("frozen", "thawing", "thawed")
   # what are the comparisons we are looking for?
 dds <- DESeq(dds)  
 res <- results(dds)
-res
+
+resNoFilt <- results(dds, independentFiltering = FALSE)
+
+metadata(res)$alpha
+
+plot(metadata(res)$filterNumRej, 
+     type="b", ylab="number of rejections",
+     xlab="quantiles of filter")
+lines(metadata(res)$lo.fit, col="red")
+abline(v=metadata(res)$filterTheta)
+
+metadata(res)$filterThreshold
+# 51.70751% of genes were filtered out
+# 0.72585 mean count of genes filtered out
 
 # prints the list of comparisons
 resultsNames(dds)
+
+# ~~review independent filtering~~~
+# print cook's distance
+assays(dds)[["cooks"]]
+
+# plots cook's distance for each sample
+par(mar=c(8,5,2,2))
+boxplot(log10(assays(dds)[["cooks"]]), range=0, las=2)
+
+# plots dispersion estimates
+plotDispEsts(dds)
+
+# plot frequency and removal of p-val [1,0]
+use <- res$baseMean > metadata(res)$filterThreshold
+h1 <- hist(res$pvalue[!use], breaks=0:50/50, plot=FALSE)
+h2 <- hist(res$pvalue[use], breaks=0:50/50, plot=FALSE)
+colori <- c(`do not pass`="khaki", `pass`="powderblue")
+
+barplot(height = rbind(h1$counts, h2$counts), beside = FALSE,
+        col = colori, space = 0, main = "", ylab="frequency")
+text(x = c(0, length(h1$counts)), y = 0, label = paste(c(0,1)),
+     adj = c(0.5,1.7), xpd=NA)
+legend("top", fill=rev(colori), legend=rev(names(colori)))
+
+
 
 # ~~~ contrast results ~~~
 
@@ -86,9 +125,6 @@ resNewThawed_frozen <- results(dds, contrast=c("combined_factor", "thawednew_tun
 resNewThawing_frozen <- results(dds, contrast=c("combined_factor", "thawingnew_tunnel", "frozennew_tunnel"))
 
 
-plot(metadata(res)$filterNumRej, 
-     type="b", ylab="number of rejections",
-     xlab="quantiles of filter")
 # ~~~ output to .csv files ~~~
 # L03 subsystem name plus LFC and adjusted p-value for 
 # frozen/thawing and frozen/thawed at each site
@@ -101,10 +137,10 @@ res35 <- c(as.data.frame(res35thawed_frozen@rownames),
 write.csv(res35, file="res35.csv")
 head(res35)
 
-res45 <- c(as.data.frame(res45thawed_frozen@rownames), 
-           as.data.frame(res45thawed_frozen$log2FoldChange), 
+res45 <- c(as.data.frame(res45thawed_frozen@rownames),
            as.data.frame(res45thawing_frozen$log2FoldChange),
            as.data.frame(res45thawing_frozen$padj),
+           as.data.frame(res45thawed_frozen$log2FoldChange),
            as.data.frame(res45thawed_frozen$padj))
 write.csv(res45, file="res45.csv")
 
@@ -114,7 +150,6 @@ res60 <- c(as.data.frame(res60thawed_frozen@rownames),
            as.data.frame(res60thawed_frozen$log2FoldChange), 
            as.data.frame(res60thawed_frozen$padj))
 write.csv(res60, file="res60.csv")
-?write.csv
 
 res83 <- c(as.data.frame(res83thawed_frozen@rownames),
            as.data.frame(res83thawing_frozen$log2FoldChange),
@@ -159,7 +194,54 @@ write.csv(as.data.frame(resNewThawing_frozen),
 
 
 
+# ~~~NO FILTER TEST~~~
 
+# make results file
+res35noFilt <- results(dds, contrast=c("combined_factor", "thawed35_meters", "frozen35_meters"), 
+                       independentFiltering = FALSE)
+
+res35noFilt_df <- c(as.data.frame(res35noFilt@rownames),
+             as.data.frame(res35noFilt$log2FoldChange), 
+             as.data.frame(res35noFilt$padj))
+write.csv(res35noFilt_df, file="res35noFilt.csv")
+
+# read in result csv files as a tibble
+res35noFiltcsv <- readr::read_csv("res35noFilt.csv", col_names = TRUE, col_types= "icdd")
+res35noFiltcsv <- select(res35noFiltcsv, -1) # delete first column of numbers
+
+# re name columns
+colnames(res35noFiltcsv) <- c("L03", "thawed", "thawed.padj")
+
+# gather and remove log2 NA rows
+df <- res35noFiltcsv %>%
+  gather(key="thaw.state", value= "Log2", 
+        thawed, -thawed.padj, 
+         na.rm=TRUE)
+
+meters35noFilt <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
+  # tile with black contour
+  geom_tile(colour="black") +
+  # B&W theme, no grey background
+  theme_bw() +
+  # get rid of y axis titles
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  # Green color theme for `fill`
+  scale_fill_distiller(palette="RdYlBu", direction=-1) +
+  # since there is no legend, adding a title
+  labs(title = "35 Meters: NO FILTER Log Fold Change from Frozen")
+meters35noFilt
+# save to file in figures directory
+ggsave(
+  "35NoFilt.png",
+  plot = meters35noFilt,
+  device = png(),
+  path = "~/Documents/CRREL/permafrost-pathogens/permafrost-figures",
+  scale = 1,
+  width = 30,
+  height = 10,
+  units = "cm",
+  dpi = 300)
 
 
 

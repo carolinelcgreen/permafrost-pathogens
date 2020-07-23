@@ -1,15 +1,7 @@
 # PERMAFROST-PATHOGENS DATA VISUALIZATION
 # Created: 7/20/2020
 # Author: C. Green
-# Last Edited: 7/22/2020
-
-
-# read in location results
-# res35 <- read.csv("~/Documents/CRREL/permafrost-pathogens/res35.csv", row.names=1)
-# res45 <- read.csv("~/Documents/CRREL/permafrost-pathogens/res45.csv", row.names=1)
-# res60 <- read.csv("~/Documents/CRREL/permafrost-pathogens/res60.csv", row.names=1)
-# res83 <- read.csv("~/Documents/CRREL/permafrost-pathogens/res83.csv", row.names=1)
-# resNew <- read.csv("~/Documents/CRREL/permafrost-pathogens/resNew.csv", row.names=1)
+# Last Edited: 7/23/2020
 
 # ~~ heat map ~~~
 
@@ -22,7 +14,7 @@ library("ggplot2")
 
 # read in result csv files as a tibble
 res35csv <- readr::read_csv("res35.csv", col_names = TRUE, col_types= list("icdddd"))
-res35csv <- select(res35csv, -1)
+res35csv <- select(res35csv, -1) # delete first column of numbers
 
 # re name columns
 colnames(res35csv) <- c("L03", "thawing", "thawing.padj", "thawed", "thawed.padj")
@@ -33,7 +25,7 @@ df <- res35csv %>%
          thawing, thawed, -thawing.padj, -thawed.padj, 
          na.rm=TRUE)
 
-ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
+meters35 <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
     # tile with black contour
     geom_tile(colour="black") +
     # B&W theme, no grey background
@@ -45,12 +37,24 @@ ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
     scale_fill_distiller(palette="RdYlBu", direction=-1) +
     # since there is no legend, adding a title
     labs(title = "35 Meters: Log Fold Change from Frozen")
+meters35
+# save to file in figures directory
+ggsave(
+  "35meters.png",
+  plot = meters35,
+  device = png(),
+  path = "~/Documents/CRREL/permafrost-pathogens/permafrost-figures",
+  scale = 1,
+  width = 30,
+  height = 10,
+  units = "cm",
+  dpi = 300)
 
 # ~~ 45 METERS ~~~
 
 # read in result csv files as a tibble
 res45csv <- readr::read_csv("res45.csv", col_names = TRUE, col_types="icdddd")
-res45csv <- select(res45csv, -1)
+res45csv <- select(res45csv, -1) # delete first column of numbers
 
 # re name columns
 colnames(res45csv) <- c("L03", "thawing", "thawing.padj", "thawed", "thawed.padj")
@@ -61,7 +65,7 @@ df <- res45csv %>%
          thawing, thawed, -thawing.padj, -thawed.padj, 
          na.rm=TRUE)
 
-ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
+meters45 <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
   # tile with black contour
   geom_tile(colour="black") +
   # B&W theme, no grey background
@@ -73,14 +77,26 @@ ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
   scale_fill_distiller(palette="RdYlBu", direction=-1) +
   # since there is no legend, adding a title
   labs(title = "45 Meters: Log Fold Change from Frozen")
+meters45
+# save to file in figures directory
+ggsave(
+  "45meters.png",
+  plot = meters45,
+  device = png(),
+  path = "~/Documents/CRREL/permafrost-pathogens/permafrost-figures",
+  scale = 1,
+  width = 30,
+  height = 10,
+  units = "cm",
+  dpi = 300)
 
 # ~~ 60 METERS ~~~
 
 # read in result csv files as a tibble
 res60csv <- readr::read_csv("res60.csv", col_names = TRUE, col_types="icdddd")
-res60csv <- select(res60csv, -1)
+res60csv <- select(res60csv, -1) # delete first column of numbers
 
-# re name columns
+# re-name columns
 colnames(res60csv) <- c("L03", "thawing", "thawing.padj", "thawed", "thawed.padj")
 
 # gather and remove log2 NA rows
@@ -89,24 +105,36 @@ df <- res60csv %>%
          thawing, thawed, -thawing.padj, -thawed.padj, 
          na.rm=TRUE)
 
-ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
-  # tile with black contour
-  geom_tile(colour="black") +
-  # B&W theme, no grey background
-  theme_bw() +
-  # get rid of y axis titles
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
-  # Green color theme for `fill`
-  scale_fill_distiller(palette="RdYlBu", direction=-1) +
-  # since there is no legend, adding a title
-  labs(title = "60 Meters: Log Fold Change from Frozen")
+meters60 <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
+            # tile with black contour
+            geom_tile(colour="black") +
+            # B&W theme, no grey background
+            theme_bw() +
+            # get rid of y axis titles
+            theme(axis.text.x=element_blank(),
+                  axis.ticks.x=element_blank()) +
+            # Green color theme for `fill`
+            scale_fill_distiller(palette="RdYlBu", direction=-1) +
+            # since there is no legend, adding a title
+            labs(title = "60 Meters: Log Fold Change from Frozen")
+meters60
+# save to file in figures directory
+ggsave(
+  "60meters.png",
+  plot = meters60,
+  device = png(),
+  path = "~/Documents/CRREL/permafrost-pathogens/permafrost-figures",
+  scale = 1,
+  width = 30,
+  height = 10,
+  units = "cm",
+  dpi = 300)
 
 # ~~ 83 METERS ~~~
 
 # read in result csv files as a tibble
 res83csv <- readr::read_csv("res83.csv", col_names = TRUE, col_types="icdddd")
-res83csv <- select(res83csv, -1)
+res83csv <- select(res83csv, -1) # delete first column of numbers
 
 # re name columns
 colnames(res83csv) <- c("L03", "thawing", "thawing.padj", "thawed", "thawed.padj")
@@ -117,46 +145,68 @@ df <- res83csv %>%
          thawing, thawed, -thawing.padj, -thawed.padj, 
          na.rm=TRUE)
 
-ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
-  # tile with black contour
-  geom_tile(colour="black") +
-  # B&W theme, no grey background
-  theme_bw() +
-  # get rid of y axis titles
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
-  # Green color theme for `fill`
-  scale_fill_distiller(palette="RdYlBu", direction=-1) +
-  # since there is no legend, adding a title
-  labs(title = "83 Meters: Log Fold Change from Frozen")
+meters83 <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
+            # tile with black contour
+            geom_tile(colour="black") +
+            # B&W theme, no grey background
+            theme_bw() +
+            # get rid of y axis titles
+            theme(axis.text.x=element_blank(),
+                  axis.ticks.x=element_blank()) +
+            # Green color theme for `fill`
+            scale_fill_distiller(palette="RdYlBu", direction=-1) +
+            # since there is no legend, adding a title
+            labs(title = "83 Meters: Log Fold Change from Frozen")
+meters83
+# save to file in figures directory
+ggsave(
+  "83meters.png",
+  plot = meters83,
+  device = png(),
+  path = "~/Documents/CRREL/permafrost-pathogens/permafrost-figures",
+  scale = 1,
+  width = 30,
+  height = 10,
+  units = "cm",
+  dpi = 300)
 
-# ~~ 45 METERS ~~~
+# ~~ New METERS ~~~
 
 # read in result csv files as a tibble
-res45csv <- readr::read_csv("res45.csv", col_names = TRUE, col_types="icdddd")
-res45csv <- select(res45csv, -1)
+resNewcsv <- readr::read_csv("resNew.csv", col_names = TRUE, col_types="icdddd")
+resNewcsv <- select(resNewcsv, -1) # delete first column of numbers
 
 # re name columns
-colnames(res45csv) <- c("L03", "thawing", "thawing.padj", "thawed", "thawed.padj")
+colnames(resNewcsv) <- c("L03", "thawing", "thawing.padj", "thawed", "thawed.padj")
 
 # gather and remove log2 NA rows
-df <- res45csv %>%
+df <- resNewcsv %>%
   gather(key="thaw.state", value= "Log2", 
          thawing, thawed, -thawing.padj, -thawed.padj, 
          na.rm=TRUE)
 
-ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
-  # tile with black contour
-  geom_tile(colour="black") +
-  # B&W theme, no grey background
-  theme_bw() +
-  # get rid of y axis titles
-  theme(axis.text.x=element_blank(),
-        axis.ticks.x=element_blank()) +
-  # Green color theme for `fill`
-  scale_fill_distiller(palette="RdYlBu", direction=-1) +
-  # since there is no legend, adding a title
-  labs(title = "45 Meters: Log Fold Change from Frozen")
-
-
+metersNew <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
+              # tile with black contour
+              geom_tile(colour="black") +
+              # B&W theme, no grey background
+              theme_bw() +
+              # get rid of y axis titles
+              theme(axis.text.x=element_blank(),
+                    axis.ticks.x=element_blank()) +
+              # Green color theme for `fill`
+              scale_fill_distiller(palette="RdYlBu", direction=-1) +
+              # since there is no legend, adding a title
+              labs(title = "New Tunnel: Log Fold Change from Frozen")
+metersNew
+# save to file in figures directory
+ggsave(
+  "NewTunnel.png",
+  plot = metersNew,
+  device = png(),
+  path = "~/Documents/CRREL/permafrost-pathogens/permafrost-figures",
+  scale = 1,
+  width = 30,
+  height = 10,
+  units = "cm",
+  dpi = 300)
 
