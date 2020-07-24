@@ -1,7 +1,9 @@
 # PERMAFROST-PATHOGENS DATA VISUALIZATION
+  # creates heat maps looking at frozen to thawed and frozen to
+  # thawing LFC for all L03 virulence-related genes at each site
 # Created: 7/20/2020
 # Author: C. Green
-# Last Edited: 7/23/2020
+# Last Edited: 7/24/2020
 
 # ~~ heat map ~~~
 
@@ -13,7 +15,9 @@ library("ggplot2")
 # ~~ 35 METERS ~~~
 
 # read in result csv files as a tibble
-res35csv <- readr::read_csv("res35.csv", col_names = TRUE, col_types= list("icdddd"))
+res35csv <- readr::read_csv("res35.csv", 
+                            col_names = TRUE, 
+                            col_types= list("icdddd"))
 res35csv <- select(res35csv, -1) # delete first column of numbers
 
 # re name columns
@@ -38,6 +42,7 @@ meters35 <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
     # since there is no legend, adding a title
     labs(title = "35 Meters: Log Fold Change from Frozen")
 meters35
+
 # save to file in figures directory
 ggsave(
   "35meters.png",
@@ -49,6 +54,8 @@ ggsave(
   height = 10,
   units = "cm",
   dpi = 300)
+
+
 
 # ~~ 45 METERS ~~~
 
@@ -78,6 +85,7 @@ meters45 <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
   # since there is no legend, adding a title
   labs(title = "45 Meters: Log Fold Change from Frozen")
 meters45
+
 # save to file in figures directory
 ggsave(
   "45meters.png",
@@ -89,6 +97,8 @@ ggsave(
   height = 10,
   units = "cm",
   dpi = 300)
+
+
 
 # ~~ 60 METERS ~~~
 
@@ -118,6 +128,7 @@ meters60 <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
             # since there is no legend, adding a title
             labs(title = "60 Meters: Log Fold Change from Frozen")
 meters60
+
 # save to file in figures directory
 ggsave(
   "60meters.png",
@@ -129,6 +140,7 @@ ggsave(
   height = 10,
   units = "cm",
   dpi = 300)
+
 
 # ~~ 83 METERS ~~~
 
@@ -158,6 +170,7 @@ meters83 <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
             # since there is no legend, adding a title
             labs(title = "83 Meters: Log Fold Change from Frozen")
 meters83
+
 # save to file in figures directory
 ggsave(
   "83meters.png",
@@ -169,6 +182,7 @@ ggsave(
   height = 10,
   units = "cm",
   dpi = 300)
+
 
 # ~~ New METERS ~~~
 
@@ -198,6 +212,7 @@ metersNew <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
               # since there is no legend, adding a title
               labs(title = "New Tunnel: Log Fold Change from Frozen")
 metersNew
+
 # save to file in figures directory
 ggsave(
   "NewTunnel.png",
