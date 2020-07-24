@@ -1,7 +1,7 @@
 # WORKFLOW FOR FUNCTIONAL DATA DESEQ2 ANALYSIS
 # Created: 7/01/2020
 # Author: C. Green
-# Last edited: 7/17/2020
+# Last edited: 7/24/2020
 
 # Citation: M. I. Love, W. Huber, S. Anders: Moderated 
 # estimation of fold change and dispersion for RNA-Seq data 
@@ -15,17 +15,21 @@ BiocManager::install(version = "3.11")
 BiocManager::install("DESeq2")
 BiocManager::install("pheatmap")
 
-a# ~~~ data set creation ~~~
+# ~~~ data set creation ~~~
 # using count matrix input data workflow
 
 # read in count matrix
   # only including "Virulence" and "Virulence, Disease and Defense" SEED subsystems
-  # from L03 sequence data
-  # control columns were removed prior
+  # from L03 sequence data. Control columns were already removed.
 counts <- as.matrix(read.csv("~/Documents/CRREL/permafrost-pathogens/L03_Virulence.tsv", 
                                       sep = "\t", row.names=1))
 
 # read in count matrix metadata
+  # metadata table created based on DESeq2 requirements:
+  # column 1 contains sample names in the order they appear in row one of count table
+  # column 2 contains location (35, 45, 60, 83 meters or New Tunnel)
+  # column 3 contains thaw.state (frozen (-3C), thawing (0C), thawed (6C))
+  # column 4 contains combined_factor (both thaw.temp and location data)
 count_information <- read.csv("~/Documents/CRREL/permafrost-pathogens/count_information.csv", row.names=1)
 
 # format count matrix metadata
@@ -43,14 +47,15 @@ all(rownames(metadata) == colnames(counts)) # TRUE
 library("DESeq2")
 
 # make DESeq Data Set from count matrix
+  # design used combined_factor due to the comparison requirements
+  # of the program
 dds <- DESeqDataSetFromMatrix(countData = counts,
                               colData = metadata,
                               design = ~ combined_factor)
 dds
 
 # ~~ re-level data ~~~
-# re-level location data based on control group, 
-  # then depth of sample
+# location data leveled based on depth
 dds$location <- factor(dds$location, levels = c("new_tunnel", 
                     "35_meters", "45_meters", "60_meters", "83_meters"))
 
@@ -60,29 +65,23 @@ dds$thaw.temp <- factor(dds$thaw.temp, levels = c("frozen", "thawing", "thawed")
 # ~~~ pre-filtering taken care of in BBTools ~~~
 
 # ~~~differential expression analysis~~~
-  # what are the default tests being run?
-  # what are the comparisons we are looking for?
+  # automatic independent filtering = TRUE
+  # alpha = 0.1
 dds <- DESeq(dds)  
 res <- results(dds)
 
-resNoFilt <- results(dds, independentFiltering = FALSE)
 
-metadata(res)$alpha
-
-plot(metadata(res)$filterNumRej, 
-     type="b", ylab="number of rejections",
-     xlab="quantiles of filter")
-lines(metadata(res)$lo.fit, col="red")
-abline(v=metadata(res)$filterTheta)
-
-metadata(res)$filterThreshold
-# 51.70751% of genes were filtered out
-# 0.72585 mean count of genes filtered out
 
 # prints the list of comparisons
 resultsNames(dds)
 
 # ~~review independent filtering~~~
+
+# prints filtering results
+metadata(res)$filterThreshold
+# 51.70751% of genes were filtered out
+# 0.72585 mean count of genes filtered out
+
 # print cook's distance
 assays(dds)[["cooks"]]
 
@@ -108,7 +107,8 @@ legend("top", fill=rev(colori), legend=rev(names(colori)))
 
 
 # ~~~ contrast results ~~~
-
+  # creates specific comparison of frozen->thawing and frozen -> at each location
+  # output is a DESEqResults table for the contrast
 res35thawed_frozen <- results(dds, contrast=c("combined_factor", "thawed35_meters", "frozen35_meters"))
 res35thawing_frozen <- results(dds, contrast=c("combined_factor", "thawing35_meters", "frozen35_meters"))
 
@@ -125,9 +125,13 @@ resNewThawed_frozen <- results(dds, contrast=c("combined_factor", "thawednew_tun
 resNewThawing_frozen <- results(dds, contrast=c("combined_factor", "thawingnew_tunnel", "frozennew_tunnel"))
 
 
-# ~~~ output to .csv files ~~~
-# L03 subsystem name plus LFC and adjusted p-value for 
-# frozen/thawing and frozen/thawed at each site
+# ~~~ export to .csv files ~~~
+# output is a csv file containing
+  # L03 subsystem name
+  # Log2 Fold Change for frozen->thawing
+  # Adjusted p-value for frozen->thawing
+  # Log2 Fold Change for frozen->thawed
+  # Adjusted p-value for frozen->thawed
 
 res35 <- c(as.data.frame(res35thawed_frozen@rownames), 
            as.data.frame(res35thawing_frozen$log2FoldChange),
@@ -195,6 +199,8 @@ write.csv(as.data.frame(resNewThawing_frozen),
 
 
 # ~~~NO FILTER TEST~~~
+  # outputs one contrast file for 35meters frozen->thawed WITHOUT 
+  # independent filtering and creates heatmap for those results.
 
 # make results file
 res35noFilt <- results(dds, contrast=c("combined_factor", "thawed35_meters", "frozen35_meters"), 
