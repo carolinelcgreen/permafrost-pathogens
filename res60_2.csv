@@ -1,0 +1,64 @@
+"","res60thawed_frozen2.rownames","res60thawing_frozen2.log2FoldChange","res60thawing_frozen2.padj","res60thawed_frozen2.log2FoldChange","res60thawed_frozen2.padj"
+"1","Beta.lactamase",0.248690580050176,1,-0.106765207042276,1
+"2","BlaR1 Family Regulatory Sensor.transducer Disambiguation",-0.69829246263916,0.683860095602082,-0.460879377589368,0.95626055204094
+"3","Cadmium resistance",1.41579092148332,0.117780586150472,1.78499129054767,0.00825874279088797
+"4","Cobalt.zinc.cadmium resistance",0.0441762642437635,1,-0.0182238530393777,1
+"5","Copper homeostasis",-0.572716939059055,4.35070372264189e-05,-0.590353803371444,1.61135816260559e-05
+"6","Copper homeostasis: copper tolerance",0.540951375722306,1,0.673329213124095,0.858600043781253
+"7","Fosfomycin resistance",-0.631623895152734,1,-0.263179475502832,1
+"8","Heat shock protein Hsp22.5 involved in pathogenesis of Mycobacterium tuberculosis",-0.058885509315083,1,0.395308851562486,1
+"9","Lysozyme inhibitors",-0.922252794047718,1,-0.787350501012667,1
+"10","Mammalian cell entry genes (MCE) in Streptomyces",0.300606553909901,1,0.325838004464344,1
+"11","Mercuric reductase",-0.316060677507363,0.51291301394654,-0.220849413599792,0.858600043781253
+"12","Mercury resistance operon",-0.232487191994557,1,-0.193194434100979,1
+"13","Methicillin resistance in Staphylococci",-1.15143050123676,1,-0.128896199705175,1
+"14","MexE.MexF.OprN Multidrug Efflux System",-1.17619576421231,0.240262169745753,-1.73179949717842,0.0178241890137711
+"15","Multidrug efflux pump in Campylobacter jejuni (CmeABC operon)",0.406401394788557,0.854036482699656,0.291669399326626,1
+"16","Multidrug Resistance Efflux Pumps",0.0733401499848202,1,0.0263019595852937,1
+"17","Multidrug Resistance, 2.protein version Found in Gram.positive bacteria",0.180368400709175,1,0.353170037260896,1
+"18","Multidrug Resistance, Tripartite Systems Found in Gram Negative Bacteria",-0.1553937131278,1,-0.290716334322864,1
+"19","Mycobacterial MmpL1,2,3,4,7,10,11,12 membrane protein clusters",0.0727827578735994,1,0.228686275732111,1
+"20","Mycobacterium virulence operon involved in an unknown function with a Jag Protein and YidC and YidD",0.0776250013725871,1,0.0343389877370589,1
+"21","Mycobacterium virulence operon involved in an unknown function with Superoxide dismutase",-1.10081872046928,0.742382152759902,-0.913678413732131,0.858600043781253
+"22","Mycobacterium virulence operon involved in protein synthesis (SSU ribosomal proteins)",-0.530674515047538,1,0.855914970529221,1
+"23","Mycobacterium virulence operon involved with nitrate dormancy regulon",2.32888899637729,1,1.58840075961188,1
+"24","Mycobacterium virulence operon with Esat6.like proteins",0,1,0,1
+"25","Polymyxin Synthetase Gene Cluster in Bacillus",1.16798250637766,1,2.38447874754822,0.49225908619567
+"26","Resistance to chromium compounds",-0.215409949858745,0.421377337583386,-0.266193181245845,0.160528507870464
+"27","Resistance to fluoroquinolones",0.0744305011691006,1,0.0405072560699292,1
+"28","Resistance to Vancomycin",-0.598704767772829,0.969263958815494,-0.442577913745689,1
+"29","sigma.Fimbriae",-0.253401077709821,1,-1.17179658835314,0.93601914036689
+"30","Small multidrug resistance strays",0.659820659555333,1,2.08295761310006,1
+"31","Streptococcus pneumoniae Vancomycin Tolerance Locus",1.34447195963732,1,1.35860938803853,1
+"32","Streptothricin resistance",-0.956214471675536,1,-1.18941810608021,1
+"33","Teicoplanin.resistance in Staphylococcus",0,1,0,1
+"34","The mdtABCD multidrug resistance cluster",-0.33994842757487,1,-0.760491252197628,0.786369526874962
+"35","Type 4 secretion and conjugative transfer",-0.767376711052276,0.496731018697026,-0.768658377991838,0.460378513813302
+"36","Zinc resistance",-0.523830812591507,0.149097677377553,-0.639717080832953,0.0192831211253141
+"37","Adhesins in Staphylococcus",-0.203354413329183,1,-0.789788059624141,1
+"38","Adhesion of Campylobacter",1.39206721982115,0.703375147232762,1.80212171199479,0.394778947363123
+"39","Bacitracin Stress Response",1.99283586288908,0.283547661810392,2.61204344695103,0.0467365890117283
+"40","Bacterial cyanide production and tolerance mechanisms",0.484744029184,1,0.922491869384491,0.858600043781253
+"41","Cytolysin and Lipase operon in Vibrio",0.172026849573936,1,-0.177978205524618,1
+"42","Inclusion membrane proteins supporting intracellular life styles in Chlamydiales",3.30448025335689,7.00137420471701e-05,3.51626356291466,1.61135816260559e-05
+"43","Legionella pneumophila Virulome",2.93941000701159,0.35420250015472,3.46513744154499,0.148513797265162
+"44","Listeria surface proteins. Internalin.like proteins",0.0990479515381542,1,-0.158271786618422,1
+"45","Listeria surface proteins. LPXTG motif",0,1,1.61109144320512,1
+"46","Mediator of hyperadherence YidE in Enterobacteria and its conserved region",-0.276326703429056,1,0.892120516409851,1
+"47","MRSA analysis Oli",1.05522873204357,1,-0.0319496482302861,1
+"48","MymA operon of Mycobacterium tuberculosis",-0.401429808858901,1,-0.31579775361859,1
+"49","Salmonella invasion locus",0,1,0.999554630208147,1
+"50","Streptococcus pyogenes recombinatorial zone",2.86922804910514,0.240262169745753,4.43271293723811,0.00675336253252497
+"51","Streptococcus pyogenes Virulome",-1.10404984585359,1,-1.69047402659151,1
+"52","Streptolysin S Biosynthesis and Transport",1.35900590135291,1,2.33430394400939,0.818824072332693
+"53","Tolerance to colicin E2",0.0109842950725883,1,-0.00939623274299976,1
+"54","Type 1 pili (mannose.sensitive fimbriae)",0,1,0,1
+"55","Family 02 Ca2 P.type ATPase",0.0233365560587894,1,-0.0306781173677323,1
+"56","FIG039061. hypothetical protein related to heme utilization",-0.00477018717086602,1,0.0535004897405895,1
+"57","MukBEF Chromosome Condensation",NA,NA,NA,NA
+"58","Alginate metabolism",NA,NA,NA,NA
+"59","Polyglycerolphosphate lipoteichoic acid biosynthesis",NA,NA,NA,NA
+"60","At1g69340 At2g40600",NA,NA,NA,NA
+"61","Coagulation cascade",NA,NA,NA,NA
+"62","Regulatory Intramembrane Proteolysis Pathways",NA,NA,NA,NA
+"63","Terminal cytochrome C oxidases",NA,NA,NA,NA

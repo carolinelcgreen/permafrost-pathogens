@@ -15,7 +15,17 @@ BiocManager::install(version = "3.11")
 BiocManager::install("DESeq2")
 BiocManager::install("pheatmap")
 
-# ~~~ data set creation ~~~
+install.packages("RColorBrewer")
+
+# load libraries---------
+library("DESeq2")
+library("dplyr")
+library("tidyr")
+library("ggplot2")
+library("RColorBrewer")
+
+
+# DATA SET CREATION -------------------------------------
 # using count matrix input data workflow
 
 # read in count matrix
@@ -43,8 +53,6 @@ metadata$combined_factor <- factor(metadata$combined_factor)
 all(rownames(metadata) %in% colnames(counts)) # TRUE
 all(rownames(metadata) == colnames(counts)) # TRUE
 
-# open DESeq2
-library("DESeq2")
 
 # make DESeq Data Set from count matrix
   # design used combined_factor due to the comparison requirements
@@ -64,7 +72,10 @@ dds$thaw.temp <- factor(dds$thaw.temp, levels = c("frozen", "thawing", "thawed")
 
 # ~~~ pre-filtering taken care of in BBTools ~~~
 
-# ~~~differential expression analysis~~~
+
+
+# DESeq ANALYSIS ----------------------------------------
+
   # automatic independent filtering = TRUE
   # alpha = 0.1
 dds <- DESeq(dds)  
@@ -106,7 +117,9 @@ legend("top", fill=rev(colori), legend=rev(names(colori)))
 
 
 
-# ~~~ contrast results ~~~
+
+# CONTRAST RESULTS --------------------------------------
+
   # creates specific comparison of frozen->thawing and frozen -> at each location
   # output is a DESEqResults table for the contrast
 res35thawed_frozen <- results(dds, contrast=c("combined_factor", "thawed35_meters", "frozen35_meters"))
@@ -125,7 +138,9 @@ resNewThawed_frozen <- results(dds, contrast=c("combined_factor", "thawednew_tun
 resNewThawing_frozen <- results(dds, contrast=c("combined_factor", "thawingnew_tunnel", "frozennew_tunnel"))
 
 
-# ~~~ export to .csv files ~~~
+
+
+# EXPORT to .csv FILE -----------------------------------
 # output is a csv file containing
   # L03 subsystem name
   # Log2 Fold Change for frozen->thawing
@@ -198,13 +213,15 @@ write.csv(as.data.frame(resNewThawing_frozen),
 
 
 
-# ~~~NO FILTER TEST~~~
+
+# NO FILTER TEST ----------------------------------------
   # outputs one contrast file for 35meters frozen->thawed WITHOUT 
   # independent filtering and creates heatmap for those results.
 
 # make results file
 res35noFilt <- results(dds, contrast=c("combined_factor", "thawed35_meters", "frozen35_meters"), 
-                       independentFiltering = FALSE)
+                    
+                          independentFiltering = FALSE)
 
 res35noFilt_df <- c(as.data.frame(res35noFilt@rownames),
              as.data.frame(res35noFilt$log2FoldChange), 
@@ -249,6 +266,227 @@ ggsave(
   units = "cm",
   dpi = 300)
 
+
+
+
+
+
+
+
+# DATA VISUALIZATION ----------
+
+# ~~ 35 METERS ~~~
+
+# read in result csv files as a tibble
+res35csv <- readr::read_csv("res35.csv", 
+                            col_names = TRUE, 
+                            col_types="icdddd")
+res35csv <- select(res35csv, -1) # delete first column of numbers
+
+# re name columns
+colnames(res35csv) <- c("L03", "thawing", "thawing.padj", "thawed", "thawed.padj")
+
+# gather and remove log2 NA rows
+df <- res35csv %>%
+  gather(key="thaw.state", value= "Log2", 
+         thawing, thawed, -thawing.padj, -thawed.padj, 
+         na.rm=TRUE)
+
+meters35 <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
+  # tile with black contour
+  geom_tile(colour="black") +
+  # B&W theme, no grey background
+  theme_bw() +
+  # get rid of y axis titles
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  # Green color theme for `fill`
+  scale_fill_distiller(palette="RdYlBu", direction=-1) +
+  # since there is no legend, adding a title
+  labs(title = "35 Meters: Log Fold Change from Frozen")
+meters35
+
+# save to file in figures directory
+ggsave(
+  "35meters.png",
+  plot = meters35,
+  device = png(),
+  path = "~/Documents/CRREL/permafrost-pathogens/permafrost-figures",
+  scale = 1,
+  width = 30,
+  height = 10,
+  units = "cm",
+  dpi = 300)
+
+
+
+# ~~ 45 METERS ~~~
+
+# read in result csv files as a tibble
+res45csv <- readr::read_csv("res45.csv", col_names = TRUE, col_types="icdddd")
+res45csv <- select(res45csv, -1) # delete first column of numbers
+
+# re name columns
+colnames(res45csv) <- c("L03", "thawing", "thawing.padj", "thawed", "thawed.padj")
+
+# gather and remove log2 NA rows
+df <- res45csv %>%
+  gather(key="thaw.state", value= "Log2", 
+         thawing, thawed, -thawing.padj, -thawed.padj, 
+         na.rm=TRUE)
+
+meters45 <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
+  # tile with black contour
+  geom_tile(colour="black") +
+  # B&W theme, no grey background
+  theme_bw() +
+  # get rid of y axis titles
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  # Green color theme for `fill`
+  scale_fill_distiller(palette="RdYlBu", direction=-1) +
+  # since there is no legend, adding a title
+  labs(title = "45 Meters: Log Fold Change from Frozen")
+meters45
+
+# save to file in figures directory
+ggsave(
+  "45meters.png",
+  plot = meters45,
+  device = png(),
+  path = "~/Documents/CRREL/permafrost-pathogens/permafrost-figures",
+  scale = 1,
+  width = 30,
+  height = 10,
+  units = "cm",
+  dpi = 300)
+
+
+
+# ~~ 60 METERS ~~~
+
+# read in result csv files as a tibble
+res60csv <- readr::read_csv("res60.csv", col_names = TRUE, col_types="icdddd")
+res60csv <- select(res60csv, -1) # delete first column of numbers
+
+# re-name columns
+colnames(res60csv) <- c("L03", "thawing", "thawing.padj", "thawed", "thawed.padj")
+
+# gather and remove log2 NA rows
+df <- res60csv %>%
+  gather(key="thaw.state", value= "Log2", 
+         thawing, thawed, -thawing.padj, -thawed.padj, 
+         na.rm=TRUE)
+
+meters60 <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
+  # tile with black contour
+  geom_tile(colour="black") +
+  # B&W theme, no grey background
+  theme_bw() +
+  # get rid of y axis titles
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  # Green color theme for `fill`
+  scale_fill_distiller(palette="RdYlBu", direction=-1) +
+  # since there is no legend, adding a title
+  labs(title = "60 Meters: Log Fold Change from Frozen")
+meters60
+
+# save to file in figures directory
+ggsave(
+  "60meters.png",
+  plot = meters60,
+  device = png(),
+  path = "~/Documents/CRREL/permafrost-pathogens/permafrost-figures",
+  scale = 1,
+  width = 30,
+  height = 10,
+  units = "cm",
+  dpi = 300)
+
+
+# ~~ 83 METERS ~~~
+
+# read in result csv files as a tibble
+res83csv <- readr::read_csv("res83.csv", col_names = TRUE, col_types="icdddd")
+res83csv <- select(res83csv, -1) # delete first column of numbers
+
+# re name columns
+colnames(res83csv) <- c("L03", "thawing", "thawing.padj", "thawed", "thawed.padj")
+
+# gather and remove log2 NA rows
+df <- res83csv %>%
+  gather(key="thaw.state", value= "Log2", 
+         thawing, thawed, -thawing.padj, -thawed.padj, 
+         na.rm=TRUE)
+
+meters83 <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
+  # tile with black contour
+  geom_tile(colour="black") +
+  # B&W theme, no grey background
+  theme_bw() +
+  # get rid of y axis titles
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  # Green color theme for `fill`
+  scale_fill_distiller(palette="RdYlBu", direction=-1) +
+  # since there is no legend, adding a title
+  labs(title = "83 Meters: Log Fold Change from Frozen")
+meters83
+
+# save to file in figures directory
+ggsave(
+  "83meters.png",
+  plot = meters83,
+  device = png(),
+  path = "~/Documents/CRREL/permafrost-pathogens/permafrost-figures",
+  scale = 1,
+  width = 30,
+  height = 10,
+  units = "cm",
+  dpi = 300)
+
+
+# ~~ NEW TUNNEL ~~~
+
+# read in result csv files as a tibble
+resNewcsv <- readr::read_csv("resNew.csv", col_names = TRUE, col_types="icdddd")
+resNewcsv <- select(resNewcsv, -1) # delete first column of numbers
+
+# re name columns
+colnames(resNewcsv) <- c("L03", "thawing", "thawing.padj", "thawed", "thawed.padj")
+
+# gather and remove log2 NA rows
+df <- resNewcsv %>%
+  gather(key="thaw.state", value= "Log2", 
+         thawing, thawed, -thawing.padj, -thawed.padj, 
+         na.rm=TRUE)
+
+metersNew <- ggplot(df, aes(x=L03, y = thaw.state , fill=Log2)) +
+  # tile with black contour
+  geom_tile(colour="black") +
+  # B&W theme, no grey background
+  theme_bw() +
+  # get rid of y axis titles
+  theme(axis.text.x=element_blank(),
+        axis.ticks.x=element_blank()) +
+  # Green color theme for `fill`
+  scale_fill_distiller(palette="RdYlBu", direction=-1) +
+  # since there is no legend, adding a title
+  labs(title = "New Tunnel: Log Fold Change from Frozen")
+metersNew
+
+# save to file in figures directory
+ggsave(
+  "NewTunnel.png",
+  plot = metersNew,
+  device = png(),
+  path = "~/Documents/CRREL/permafrost-pathogens/permafrost-figures",
+  scale = 1,
+  width = 30,
+  height = 10,
+  units = "cm",
+  dpi = 300)
 
 
 

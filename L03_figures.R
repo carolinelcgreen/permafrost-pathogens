@@ -11,13 +11,14 @@
 library("dplyr")
 library("tidyr")
 library("ggplot2")
+library("RColorBrewer")
 
 # ~~ 35 METERS ~~~
 
 # read in result csv files as a tibble
 res35csv <- readr::read_csv("res35.csv", 
                             col_names = TRUE, 
-                            col_types= list("icdddd"))
+                            col_types="icdddd")
 res35csv <- select(res35csv, -1) # delete first column of numbers
 
 # re name columns
