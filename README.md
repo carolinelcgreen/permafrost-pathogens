@@ -1,7 +1,7 @@
 # README.md #
 # permafrost-pathogens
 
-Thaw gradient effects on the expression of virulence-like factors in Alaskan permafrost samples
+Effects of a thaw gradient on the abundance of virulence-like factors in Alaskan permafrost samples
 
 Caroline Green
 
